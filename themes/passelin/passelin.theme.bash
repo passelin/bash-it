@@ -1,8 +1,29 @@
 #!/usr/bin/env bash
 
+# Two line prompt based on powerline-plain. It adds:
+# * Sexy '❯' prompt char on second line.
+# * Background color of user identifies the hostname.
+# * SSH prompt uses that same color and doesn't show hostname.
+# The hostname takes
+
+#seed RANDOM with hostname
+RANDOM=$(hostname)
+HOST_COLOR_INDEX=$(($RANDOM % 85))
+DARK_COLORS=(   1   2   4   5   8  12  19  21  23  25  27
+               29  31  33  35  37  39  41  43  45  53  55
+               57  59  61  63  65  67  69  71  73  75  77
+               80  89  91  93  95  97  99 101 103 105 107
+              109 111 113 125 127 139 132 134 136 138 141
+              142 144 146 161 163 165 167 169 171 172 174
+              176 178 180 183 184 186 220 199 200 202 204
+              206 208 210 212 214 216 218 236 )
+HOST_COLOR=${DARK_COLORS[$HOST_COLOR_INDEX]}
+#reseed
+RANDOM=$(date +%s)
+
 SHELL_SSH_CHAR="⌁ "
-SHELL_THEME_PROMPT_COLOR=32
-SHELL_SSH_THEME_PROMPT_COLOR=208
+SHELL_THEME_PROMPT_COLOR=$HOST_COLOR
+SHELL_SSH_THEME_PROMPT_COLOR=$HOST_COLOR
 
 VIRTUALENV_CHAR="ⓔ "
 VIRTUALENV_THEME_PROMPT_COLOR=35
@@ -37,7 +58,7 @@ function set_rgb_color {
 
 function powerline_shell_prompt {
     if [[ -n "${SSH_CLIENT}" ]]; then
-        SHELL_PROMPT="${bold_white}$(set_rgb_color - ${SHELL_SSH_THEME_PROMPT_COLOR}) ${SHELL_SSH_CHAR}\u@\h ${normal}"
+        SHELL_PROMPT="${bold_white}$(set_rgb_color - ${SHELL_SSH_THEME_PROMPT_COLOR}) ${SHELL_SSH_CHAR}\u ${normal}"
     else
         SHELL_PROMPT="${bold_white}$(set_rgb_color - ${SHELL_THEME_PROMPT_COLOR}) \u ${normal}"
     fi
